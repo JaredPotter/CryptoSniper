@@ -4,23 +4,15 @@ using System.IO;
 using System.Net;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using CryptoMan.Models;
 using System;
-using CryptoMan.Models.CEX.IO_api;
+using CryptoSniper.Models;
+using CryptoSniper.Models.CEX.IO_api;
+using CryptoSniper.Config;
 
-namespace CryptoMan
+namespace CryptoSniper
 {
     public static class ApiService
     {
-        #region Feilds
-
-        //Cex.io information
-        private static string userId = "";
-        private static string key = "";
-        private static string secret = "";
-
-        #endregion 
-
         #region Methods
 
         // returns the account balance 
@@ -227,6 +219,9 @@ namespace CryptoMan
             request.ContentType = "application/x-www-form-urlencoded";
 
             var nonce = GetNextNonce();
+            var userId = Configuration.ConfigData.CexIoApiInfo.UserId;
+            var key = Configuration.ConfigData.CexIoApiInfo.Key;
+            var secret = Configuration.ConfigData.CexIoApiInfo.Secret;
 
             //users signature
             var signature = GenerateSignature(nonce, userId, key, secret);

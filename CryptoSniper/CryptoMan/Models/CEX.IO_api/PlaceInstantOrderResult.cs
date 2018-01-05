@@ -1,4 +1,4 @@
-﻿namespace CryptoMan
+﻿namespace CryptoSniper
 {
     public class PlaceInstantOrderResult
     {

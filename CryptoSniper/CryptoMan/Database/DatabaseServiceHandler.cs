@@ -1,11 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace CryptoMan.Database
+namespace CryptoSniper.Database
 {
     /// <summary>
     ///     Handles specific database query operations such as inserting data.
@@ -38,7 +34,6 @@ namespace CryptoMan.Database
         //    ExecuteQuery(query);
         //}
 
-
         /// <summary>
         ///     Executes the query.
         /// </summary>
@@ -55,13 +50,16 @@ namespace CryptoMan.Database
 
                     cmd.ExecuteNonQuery();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     // MySQL Error
-                    // Reestablishing connection 
-
+                    
+                    // Closes the connection.
                     DbConnection.Connection.Close();
+
+                    // Reestablishes connection with new query.
                     ExecuteQuery(query);
+
                     // continue.
                 }
             }

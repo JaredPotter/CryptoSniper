@@ -25,13 +25,13 @@ namespace CryptoSniper.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("3")]
-        public int nonce {
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string configPath {
             get {
-                return ((int)(this["nonce"]));
+                return ((string)(this["configPath"]));
             }
             set {
-                this["nonce"] = value;
+                this["configPath"] = value;
             }
         }
     }

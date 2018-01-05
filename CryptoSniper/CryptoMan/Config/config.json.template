@@ -1,0 +1,13 @@
+﻿{
+  "databaseConnectionInfo": {
+    "hostname": "",
+    "database": "",
+    "username": "",
+    "password": ""
+  },
+  "cexIoApiInfo": {
+    "userId": "",
+    "key": "",
+    "secret":  ""
+  }
+}

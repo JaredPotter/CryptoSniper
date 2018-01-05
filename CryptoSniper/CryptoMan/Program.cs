@@ -1,28 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CryptoSniper.Config;
+using Topshelf;
 
-namespace CryptoMan
+namespace CryptoSniper
 {
     class Program
     {
         static void Main(string[] args)
         {
-            // Get Last Price 
-            //var curr1 = "BTC";
-            //var curr2 = "USD";
-            //ApiService.GetLastPrice(curr1, curr2);
+            HostFactory.Run(serviceConfig =>
+            {
+                serviceConfig.AddCommandLineDefinition("config", config => Configuration.SetConfigPathToProgramData(config));
 
-            // Get Open Orders
-            //ApiService.GetOpenOrders();
+                serviceConfig.Service<CryptoSniperService>(serviceInstance =>
+                {
+                    serviceInstance.ConstructUsing(
+                        () => new CryptoSniperService());
 
-            // Get Account Balance
-            //ApiService.GetAccountBalance();
+                    serviceInstance.WhenStarted(execute => execute.Start());
 
-            // Get Active Order Status
-            ApiService.GetActiveOrderStatus();
+                    serviceInstance.WhenStopped(execute => execute.Stop());
+                });
+
+                serviceConfig.SetServiceName("CryptoSniper");
+                serviceConfig.SetDisplayName("CryptoSniper");
+                serviceConfig.SetDescription("");
+
+                serviceConfig.StartAutomatically();
+
+                serviceConfig.EnableServiceRecovery(r =>
+                {
+                    r.RestartService(0);
+                    r.RestartService(0);
+                    r.RestartService(0);
+                    r.OnCrashOnly();
+                });
+            });
         }
     }
 }

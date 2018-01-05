@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CryptoMan.Models.CEX.IO_api
+namespace CryptoSniper.Models.CEX.IO_api
 {
     public class PlaceOrderResult
     {

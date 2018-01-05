@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CryptoMan.Models.CEX.IO_api
+namespace CryptoSniper.Models.CEX.IO_api
 {
     public class CancelAllOrdersForGivenPairResult
     {

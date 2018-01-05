@@ -1,4 +1,4 @@
-﻿namespace CryptoMan.Models
+﻿namespace CryptoSniper.Models
 {
     public class OrdersResult
     {
