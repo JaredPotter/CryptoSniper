@@ -1,5 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System.Data;
+using CryptoSniper.Config;
 
 namespace CryptoSniper.Database
 {
@@ -41,10 +42,10 @@ namespace CryptoSniper.Database
         /// </summary>
         private DbConnection()
         {
-            var hostname = "";
-            var databaseName = "";
-            var username = "";
-            var password = "";
+            var hostname = Configuration.ConfigData.DatabaseConnectionInfo.Hostname;
+            var databaseName = Configuration.ConfigData.DatabaseConnectionInfo.Database;
+            var username = Configuration.ConfigData.DatabaseConnectionInfo.Username;
+            var password = Configuration.ConfigData.DatabaseConnectionInfo.Password;
 
             var connectionString = $"Server={hostname}; database={databaseName}; UID={username}; password={password}";
             var connection = new MySqlConnection(connectionString);

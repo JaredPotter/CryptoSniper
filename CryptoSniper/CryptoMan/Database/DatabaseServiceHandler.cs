@@ -22,17 +22,14 @@ namespace CryptoSniper.Database
         #region Methods
 
         /// <summary>
-        ///     Inserts a record into the databse indicating a file has been removed from the RabbitMQ input queue and saved to either the 'validate' or 'translate' folder.
+        ///      Retrieves all users from the database.
         /// </summary>
-        /// <param name="filename">The filename.</param>
-        /// <param name="hostname">The originating Tibco machine processign the file.</param>
-        //public static void InsertDequeuedFileEntry(string filename, string hostname)
-        //{
-        //    var now = DateTime.UtcNow;
-        //    var query = $"INSERT INTO tibco_queue_file (filename, hostname, date_time, status) VALUES ('{filename}', '{hostname}', '{now:yyyy-MM-dd HH:mm:ss}', '{Status.Dequeued.ToString()}')";
+        public static void GetAllUsers()
+        {
+            var query = $"SELECT * FROM User";
 
-        //    ExecuteQuery(query);
-        //}
+            ExecuteQuery(query);
+        }
 
         /// <summary>
         ///     Executes the query.
@@ -50,7 +47,7 @@ namespace CryptoSniper.Database
 
                     cmd.ExecuteNonQuery();
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     // MySQL Error
                     

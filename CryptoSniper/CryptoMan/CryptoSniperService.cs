@@ -41,6 +41,8 @@ namespace CryptoSniper
         /// </summary>
         private static void StartService()
         {
+            DatabaseServiceHandler.GetAllUsers();
+
             // Get Last Price 
             //var curr1 = "BTC";
             //var curr2 = "USD";
@@ -50,7 +52,7 @@ namespace CryptoSniper
             //ApiService.GetOpenOrders();
 
             // Get Account Balance
-            ApiService.GetAccountBalance();
+            //ApiService.GetAccountBalance();
 
             // Get Active Order Status
             //ApiService.GetActiveOrderStatus();
