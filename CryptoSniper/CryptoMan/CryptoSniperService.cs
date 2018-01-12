@@ -1,5 +1,6 @@
 ﻿
 using CryptoSniper.Database;
+using System;
 using System.Threading;
 
 namespace CryptoSniper
@@ -41,7 +42,12 @@ namespace CryptoSniper
         /// </summary>
         private static void StartService()
         {
-            DatabaseServiceHandler.GetAllUsers();
+            DatabaseServiceHandler.CreateOrder(DateTime.Now, 1, 10, 1, "BTC");
+           
+           // DatabaseServiceHandler.CompleteOrder(1, DateTime.Now, 200000, (decimal) 0.75);   //tested, works
+           // DatabaseServiceHandler.GetAllOrders(1);                                           //tested, works
+
+            //DatabaseServiceHandler.GetAllUsers();
 
             // Get Last Price 
             //var curr1 = "BTC";
