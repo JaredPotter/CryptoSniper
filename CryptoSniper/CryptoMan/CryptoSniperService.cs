@@ -14,6 +14,8 @@ namespace CryptoSniper
         /// </summary>
         private static Thread StartThread { get; set; }
 
+        private static Thread PriceFetcherThread { get; set; }
+
         /// <summary>
         ///     Flag indicating that the service has stopped.
         /// </summary>
@@ -31,8 +33,13 @@ namespace CryptoSniper
         {
             ServiceStopped = false;
 
+            PriceFetcherThread = new Thread(GetPrices) { IsBackground = true };
+            PriceFetcherThread.Start();
+
             StartThread = new Thread(StartService) { IsBackground = true };
             StartThread.Start();
+
+
 
             return true;
         }
@@ -42,7 +49,7 @@ namespace CryptoSniper
         /// </summary>
         private static void StartService()
         {
-            DatabaseServiceHandler.CreateOrder(DateTime.Now, 1, 10, 1, "BTC");
+            //DatabaseServiceHandler.CreateOrder(DateTime.Now, 1, 10, 1, "BTC");
            
            // DatabaseServiceHandler.CompleteOrder(1, DateTime.Now, 200000, (decimal) 0.75);   //tested, works
            // DatabaseServiceHandler.GetAllOrders(1);                                           //tested, works
@@ -72,6 +79,29 @@ namespace CryptoSniper
 
             //    Thread.Sleep(1000 * 60);
             //}
+        }
+
+        private static void GetPrices()
+        {
+            while (true)
+            {
+                if (ServiceStopped)
+                {
+                    return;
+                }
+
+                // Fetch current prices.
+                var btcUsd = ApiService.GetLastPrice("BTC", "USD");
+                var ethUsd = ApiService.GetLastPrice("ETH", "USD");
+                var btgUsd = ApiService.GetLastPrice("BTG", "USD");
+                var xrpUsd = ApiService.GetLastPrice("XRP", "USD");
+                var bchUsd = ApiService.GetLastPrice("BCH", "USD");
+
+                // Store them in database.
+                DatabaseServiceHandler.CreateLastPriceRecords(btcUsd, ethUsd, btgUsd, xrpUsd, bchUsd);
+
+                Thread.Sleep(1000 * 60); // Once a minute.
+            }
         }
 
         /// <summary>

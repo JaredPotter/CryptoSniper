@@ -57,6 +57,21 @@ namespace CryptoSniper.Database
             ExecuteInsertUpdateQuery(query);
         }
 
+        public static void CreateLastPriceRecords(LastPriceResult btcUsd, LastPriceResult ethUsd, LastPriceResult btgUsd, LastPriceResult xrpUsd, LastPriceResult bchUsd)
+        {
+            var query1 = $"INSERT INTO HistoricalPriceBtcUsd (price, date) VALUES ({Convert.ToDecimal(btcUsd.lprice)}, NOW());";
+            var query2 = $"INSERT INTO HistoricalPriceEthUsd (price, date) VALUES ({Convert.ToDecimal(ethUsd.lprice)}, NOW());";
+            var query3 = $"INSERT INTO HistoricalPriceBtgUsd (price, date) VALUES ({Convert.ToDecimal(btgUsd.lprice)}, NOW());";
+            var query4 = $"INSERT INTO HistoricalPriceXrpUsd (price, date) VALUES ({Convert.ToDecimal(xrpUsd.lprice)}, NOW());";
+            var query5 = $"INSERT INTO HistoricalPriceBchUsd (price, date) VALUES ({Convert.ToDecimal(bchUsd.lprice)}, NOW());";
+
+            ExecuteInsertUpdateQuery(query1);
+            ExecuteInsertUpdateQuery(query2);
+            ExecuteInsertUpdateQuery(query3);
+            ExecuteInsertUpdateQuery(query4);
+            ExecuteInsertUpdateQuery(query5);
+        }
+
         /// <summary>
         ///     Executes the query.
         /// </summary>
