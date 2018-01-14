@@ -49,10 +49,12 @@ namespace CryptoSniper
         /// </summary>
         private static void StartService()
         {
+            //DatabaseServiceHandler.GetAllUsers();
+
             //DatabaseServiceHandler.CreateOrder(DateTime.Now, 1, 10, 1, "BTC");
-           
-           // DatabaseServiceHandler.CompleteOrder(1, DateTime.Now, 200000, (decimal) 0.75);   //tested, works
-           // DatabaseServiceHandler.GetAllOrders(1);                                           //tested, works
+
+            // DatabaseServiceHandler.CompleteOrder(1, DateTime.Now, 200000, (decimal) 0.75);   //tested, works
+            DatabaseServiceHandler.GetAllInstantOrders(1);                                           //tested, works
 
             //DatabaseServiceHandler.GetAllUsers();
 
@@ -70,15 +72,27 @@ namespace CryptoSniper
             // Get Active Order Status
             //ApiService.GetActiveOrderStatus();
 
-            //while (true)
-            //{
-            //    if (ServiceStopped)
-            //    {
-            //        return;
-            //    }
+            while (true)
+            {
+                if (ServiceStopped)
+                {
+                    return;
+                }
 
-            //    Thread.Sleep(1000 * 60);
-            //}
+                // Get all users.
+
+                // Validate active CEX.IO account.
+
+                // If investment date past, calculate investment.
+
+                // Point A - now 
+                var pointA = ApiService.GetLastPrice("BTC", "USD");
+
+                // Point B - now - price_derivative_time
+                // 
+
+                Thread.Sleep(1000 * 60);
+            }
         }
 
         private static void GetPrices()
