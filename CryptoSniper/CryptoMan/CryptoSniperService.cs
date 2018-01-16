@@ -39,8 +39,6 @@ namespace CryptoSniper
             StartThread = new Thread(StartService) { IsBackground = true };
             StartThread.Start();
 
-
-
             return true;
         }
 
@@ -49,12 +47,16 @@ namespace CryptoSniper
         /// </summary>
         private static void StartService()
         {
+
+
             //DatabaseServiceHandler.GetAllUsers();
 
             //DatabaseServiceHandler.CreateOrder(DateTime.Now, 1, 10, 1, "BTC");
 
             // DatabaseServiceHandler.CompleteOrder(1, DateTime.Now, 200000, (decimal) 0.75);   //tested, works
-            DatabaseServiceHandler.GetAllInstantOrders(1);                                           //tested, works
+            //DatabaseServiceHandler.GetAllInstantOrders(1);                                           //tested, works
+
+            //DatabaseServiceHandler.GetLastPrice("BTC");
 
             //DatabaseServiceHandler.GetAllUsers();
 
@@ -72,27 +74,28 @@ namespace CryptoSniper
             // Get Active Order Status
             //ApiService.GetActiveOrderStatus();
 
-            while (true)
-            {
-                if (ServiceStopped)
-                {
-                    return;
-                }
+            //while (true)
+            //{
+            //    if (ServiceStopped)
+            //    {
+            //        return;
+            //    }
 
-                // Get all users.
+            // Get all users.
+            var users = DatabaseServiceHandler.GetAllUsers();
 
-                // Validate active CEX.IO account.
+            // Validate active CEX.IO account.
 
-                // If investment date past, calculate investment.
+            // If investment date past, calculate investment.
 
-                // Point A - now 
-                var pointA = ApiService.GetLastPrice("BTC", "USD");
+            // Point A - now 
+            //var pointA = DatabaseServiceHandler.GetLastPrice("BTC");
 
-                // Point B - now - price_derivative_time
-                // 
+            // Point B - now - price_derivative_time
+            //var pointB = DatabaseServiceHandler.GetLastPrice("BTC", 2);
 
-                Thread.Sleep(1000 * 60);
-            }
+            //Thread.Sleep(1000 * 60);
+            //}
         }
 
         private static void GetPrices()

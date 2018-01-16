@@ -95,6 +95,7 @@
     <Compile Include="Models\CEX.IO_api\PlaceInstantOrderResult.cs" />
     <Compile Include="Models\CEX.IO_api\OrderDetailsResult.cs" />
     <Compile Include="Models\InstantOrder.cs" />
+    <Compile Include="Models\User.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">

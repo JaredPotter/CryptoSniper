@@ -2,6 +2,7 @@
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CryptoSniper.Database
 {
@@ -26,11 +27,32 @@ namespace CryptoSniper.Database
         /// <summary>
         ///      Retrieves all users from the database.
         /// </summary>
-        public static void GetAllUsers()
+        public static List<User> GetAllUsers()
         {
-            var query = $"SELECT * FROM User";
+            var query = $"SELECT * FROM User;";
+            var results = ExecuteGetQuery(query);
+            var users = new List<User>();
 
-            var result = ExecuteGetQuery(query);
+            foreach (var result in results)
+            {
+                var user = new User();
+
+                user.UserId = Convert.ToInt32(result["user_id"]);
+                user.Username = (string)result["username"];
+                user.CexioUserId = (string)result["cexio_user_id"];
+                user.CexioKey = (string)result["cexio_key"];
+                user.CexioSecret = (string)result["cexio_secret"];
+                user.PriceDerivativeTime = Convert.ToInt32(result["price_derivative_time"]);
+                user.InvestmentPercentage = Convert.ToInt32(result["investment_percentage"]);
+                user.NextInvestmentCheck = (DateTime?)result["next_investment_check"];
+
+                if(user.CexioUserId != null && user.CexioKey != null && user.CexioSecret != null)
+                {
+                    users.Add(user);
+                }                
+            }
+
+            return users;
         }
 
         public static List<InstantOrder> GetAllInstantOrders(int userId)
@@ -91,40 +113,52 @@ namespace CryptoSniper.Database
             ExecuteInsertUpdateQuery(query5);
         }
 
-        public static decimal GetLastPrice(string currency)
+        public static decimal GetLastPrice(string currency, int priceDerivativeTime = 0)
         {
-            var result = 0.00;
-            var now = DateTime.UtcNow.ToString("yyyy-MM-dd H:mm") + ":%%";
+            var now = DateTime.UtcNow.AddMinutes(priceDerivativeTime);
+            var nowString = now.ToString("yyyy-MM-dd HH:mm") + ":%%";
             var query = "";
+
             switch (currency)
             {
                 case "BTC":
-                    query = $"SELECT * FROM HistoricalPriceBtcUsd WHERE date LIKE '{now}';";
+                    query = $"SELECT * FROM HistoricalPriceBtcUsd WHERE date LIKE '{nowString}';";
                     break;
 
                 case "BTG":
-                    query = $"SELECT * FROM HistoricalPriceBtgUsd WHERE date LIKE '{now}';";
+                    query = $"SELECT * FROM HistoricalPriceBtgUsd WHERE date LIKE '{nowString}';";
                     break;
 
                 case "ETH":
-                    query = $"SELECT * FROM HistoricalPriceEthUsd WHERE date LIKE '{now}';";
+                    query = $"SELECT * FROM HistoricalPriceEthUsd WHERE date LIKE '{nowString}';";
                     break;
 
                 case "XRP":
-                    query = $"SELECT * FROM HistoricalPriceXrpUsd WHERE date LIKE '{now}';";
+                    query = $"SELECT * FROM HistoricalPriceXrpUsd WHERE date LIKE '{nowString}';";
                     break;
 
                 case "BCH":
-                    query = $"SELECT * FROM HistoricalPriceBchUsd WHERE date LIKE '{now}';";
+                    query = $"SELECT * FROM HistoricalPriceBchUsd WHERE date LIKE '{nowString}';";
                     break;
 
                 default:
                 break;
             }
-            
 
+            var results = ExecuteGetQuery(query);
 
-            return 0;
+            decimal lastPrice = 0;
+
+            var result = results.FirstOrDefault();
+
+            lastPrice = result != null ? (decimal)result["price"] : 0;
+
+            if (lastPrice == 0)
+            {
+                throw new Exception("Last price not available.");
+            }
+
+            return lastPrice;
         }
 
         /// <summary>
