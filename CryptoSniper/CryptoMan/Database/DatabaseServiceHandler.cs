@@ -46,13 +46,18 @@ namespace CryptoSniper.Database
                 user.InvestmentPercentage = Convert.ToInt32(result["investment_percentage"]);
                 user.NextInvestmentCheck = (DateTime?)result["next_investment_check"];
 
-                if(user.CexioUserId != null && user.CexioKey != null && user.CexioSecret != null)
-                {
-                    users.Add(user);
-                }                
+                users.Add(user);      
             }
 
             return users;
+        }
+
+        public static void UpdateNextInvestmentCheck(int userId, DateTime nextInvestmentCheck)
+        {
+            var query = $"UPDATE User SET next_investment_check = '{nextInvestmentCheck.ToString("yyyy-MM-dd HH:mm:ss")}' WHERE user_id = {userId};";
+
+            // TODO: get rows affected. verify equals 1.
+            ExecuteInsertUpdateQuery(query);
         }
 
         public static List<InstantOrder> GetAllInstantOrders(int userId)

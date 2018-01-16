@@ -84,9 +84,35 @@ namespace CryptoSniper
             // Get all users.
             var users = DatabaseServiceHandler.GetAllUsers();
 
-            // Validate active CEX.IO account.
+            // Validate active CEX.IO account. Remove invalid ones.
+            foreach (var user in users)
+            {
+                if (user.CexioUserId == null || user.CexioKey == null || user.CexioSecret == null)
+                {
+                    users.Remove(user);
+                }
+            }
 
             // If investment date past, calculate investment.
+            foreach (var user in users)
+            {
+                var investmentDate = user.NextInvestmentCheck;
+                var now = DateTime.Now;
+                
+
+                if (DateTime.Compare(investmentDate.Value, now) >= 0)
+                {
+                    // Increment next investment check;
+                    now = DateTime.Now;
+                    var nextInvestmentDateTime = now.AddMinutes(user.PriceDerivativeTime);
+                    DatabaseServiceHandler.UpdateNextInvestmentCheck(user.UserId, nextInvestmentDateTime);
+                }
+            }
+
+
+
+            // Check result...
+            // If good, create InstantOrder on database.
 
             // Point A - now 
             //var pointA = DatabaseServiceHandler.GetLastPrice("BTC");
@@ -94,8 +120,13 @@ namespace CryptoSniper
             // Point B - now - price_derivative_time
             //var pointB = DatabaseServiceHandler.GetLastPrice("BTC", 2);
 
+            var baseCurrency = "USD"; // TODO: make this a user database parameter.
+
+            // Execute investment.
+            var response = ApiService.PlaceInstantOrder("BTC", baseCurrency, "buy", "0.0002");
+
             //Thread.Sleep(1000 * 60);
-            //}
+           //}
         }
 
         private static void GetPrices()

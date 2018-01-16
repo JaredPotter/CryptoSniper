@@ -133,6 +133,14 @@ namespace CryptoSniper
         }
 
         // TODO: not tested
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="curr1">The currency we want to buy.</param>
+        /// <param name="curr2">The currency we're buying with.</param>
+        /// <param name="type">Buy or sell.</param>
+        /// <param name="amount"></param>
+        /// <returns></returns>
         public static PlaceInstantOrderResult PlaceInstantOrder(string curr1, string curr2, string type, string amount)
         {
             var endpointBase = "https://cex.io/api/place_order/";
