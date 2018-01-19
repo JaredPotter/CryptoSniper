@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using System;
 using CryptoSniper.Models;
 using CryptoSniper.Models.CEX.IO_api;
-using CryptoSniper.Config;
+using CryptoSniper.Config.Models;
 
 namespace CryptoSniper
 {
@@ -16,12 +16,12 @@ namespace CryptoSniper
         #region Methods
 
         // returns the account balance 
-        public static BalanceResult GetAccountBalance()
+        public static BalanceResult GetAccountBalance(CexIoApiInfo credential)
         {
             //target to hit
             var endpoint = "https://cex.io/api/balance/";
 
-            var jsonResponse = ExecutePostRequest(endpoint);
+            var jsonResponse = ExecutePostRequest(credential, endpoint);
 
             // Json convert
             var balance = JsonConvert.DeserializeObject<BalanceResult>(jsonResponse);
@@ -30,12 +30,12 @@ namespace CryptoSniper
         }
 
         // TODO: Not tested yet.
-        public static List<OrdersResult> GetOpenOrders()
+        public static List<OrdersResult> GetOpenOrders(CexIoApiInfo credential)
         {
             //target to hit
             var endpoint = " https://cex.io/api/open_orders/";
 
-            var jsonResponse = ExecutePostRequest(endpoint);
+            var jsonResponse = ExecutePostRequest(credential, endpoint);
 
             var orders = JsonConvert.DeserializeObject<List<OrdersResult>>(jsonResponse);
 
@@ -43,11 +43,11 @@ namespace CryptoSniper
         }
 
         // TODO: Not tested yet.
-        public static ActiveOrderStatusResult GetActiveOrderStatus()
+        public static ActiveOrderStatusResult GetActiveOrderStatus(CexIoApiInfo credential)
         {
             var endpoint = "https://cex.io/api/active_orders_status";
 
-            var jsonResponse = ExecutePostRequest(endpoint);
+            var jsonResponse = ExecutePostRequest(credential, endpoint);
 
             var activeOrderStatus = JsonConvert.DeserializeObject<ActiveOrderStatusResult>(jsonResponse);
 
@@ -56,6 +56,7 @@ namespace CryptoSniper
 
         // TODO: Not tested.
         public static ArchivedOrdersResults GetArchivedOrders(
+            CexIoApiInfo credential,
             string curr1, 
             string curr2,
             string limit, 
@@ -77,7 +78,7 @@ namespace CryptoSniper
                 { "status", status }
             };
 
-            var jsonResponse = ExecutePostRequest(endpoint, formParameters);
+            var jsonResponse = ExecutePostRequest(credential, endpoint, formParameters);
 
             var archivedOrders = JsonConvert.DeserializeObject<ArchivedOrdersResults>(jsonResponse);
 
@@ -85,7 +86,7 @@ namespace CryptoSniper
         }
 
         // TODO: Not Tested
-        public static bool CancelOrder(string orderId)
+        public static bool CancelOrder(CexIoApiInfo credential, string orderId)
         {
             var endpoint = "https://cex.io/api/cancel_order/";
 
@@ -93,7 +94,7 @@ namespace CryptoSniper
                 { "orderId", orderId }
             };
 
-            var jsonResponse = ExecutePostRequest(endpoint, formParameters);
+            var jsonResponse = ExecutePostRequest(credential, endpoint, formParameters);
 
             var cancelled = Convert.ToBoolean(jsonResponse);
 
@@ -101,12 +102,12 @@ namespace CryptoSniper
         }
 
         // TODO: Not Tested
-        public static CancelAllOrdersForGivenPairResult CancelAllOrdersForGivenPair(string curr1, string curr2)
+        public static CancelAllOrdersForGivenPairResult CancelAllOrdersForGivenPair(CexIoApiInfo credential, string curr1, string curr2)
         {
             var endpointBase = "https://cex.io/api/cancel_orders/BTC/USD";
             var endpoint = endpointBase + curr1 + "/" + curr2;
 
-            var response = ExecutePostRequest(endpoint);
+            var response = ExecutePostRequest(credential, endpoint);
 
             var result = JsonConvert.DeserializeObject<CancelAllOrdersForGivenPairResult>(response);
 
@@ -114,7 +115,7 @@ namespace CryptoSniper
         }
 
         // TODO: Not testsd
-        public static PlaceOrderResult PlaceOrder(string curr1, string curr2, string type, string amount, string price)
+        public static PlaceOrderResult PlaceOrder(CexIoApiInfo credential, string curr1, string curr2, string type, string amount, string price)
         {
             var endpointBase = "https://cex.io/api/place_order/";
             var endpoint = endpointBase + curr1 + "/" + curr2;
@@ -125,7 +126,7 @@ namespace CryptoSniper
                 { "price", price }
             };
 
-            var jsonResponse = ExecutePostRequest(endpoint, formParameters);
+            var jsonResponse = ExecutePostRequest(credential, endpoint, formParameters);
 
             var placeOrderResult = JsonConvert.DeserializeObject<PlaceOrderResult>(jsonResponse);
 
@@ -141,7 +142,7 @@ namespace CryptoSniper
         /// <param name="type">Buy or sell.</param>
         /// <param name="amount"></param>
         /// <returns></returns>
-        public static PlaceInstantOrderResult PlaceInstantOrder(string curr1, string curr2, string type, string amount)
+        public static PlaceInstantOrderResult PlaceInstantOrder(CexIoApiInfo credential, string curr1, string curr2, string type, string amount)
         {
             var endpointBase = "https://cex.io/api/place_order/";
             var endpoint = endpointBase + curr1 + "/" + curr2;
@@ -152,7 +153,7 @@ namespace CryptoSniper
                 { "order_type", "market" }
             };
 
-            var jsonResponse = ExecutePostRequest(endpoint, formParameters);
+            var jsonResponse = ExecutePostRequest(credential, endpoint, formParameters);
 
             var placeInstantOrderResult = JsonConvert.DeserializeObject<PlaceInstantOrderResult>(jsonResponse);
 
@@ -160,14 +161,14 @@ namespace CryptoSniper
         }
 
         // TODO: Not tested
-        public static OrderDetailsResult GetOrderDetails(string id)
+        public static OrderDetailsResult GetOrderDetails(CexIoApiInfo credential, string id)
         {
             var endpoint = "https://cex.io/api/get_order/";
             var formParameters = new Dictionary<string, string>() {
                 { "id", id }
             };
 
-            var jsonResponse = ExecutePostRequest(endpoint, formParameters);
+            var jsonResponse = ExecutePostRequest(credential, endpoint, formParameters);
 
             var orderDetailsResult = JsonConvert.DeserializeObject<OrderDetailsResult>(jsonResponse);
 
@@ -220,16 +221,16 @@ namespace CryptoSniper
         }
 
         //Send the request
-        private static string ExecutePostRequest(string endpoint, Dictionary<string, string> parameters = null)
+        private static string ExecutePostRequest(CexIoApiInfo credential, string endpoint, Dictionary<string, string> parameters = null)
         {
             var request = WebRequest.Create(endpoint);
             request.Method = "POST";
             request.ContentType = "application/x-www-form-urlencoded";
 
             var nonce = GetNextNonce();
-            var userId = Configuration.ConfigData.CexIoApiInfo.UserId;
-            var key = Configuration.ConfigData.CexIoApiInfo.Key;
-            var secret = Configuration.ConfigData.CexIoApiInfo.Secret;
+            var userId = credential.UserId;
+            var key = credential.Key;
+            var secret = credential.Secret;
 
             //users signature
             var signature = GenerateSignature(nonce, userId, key, secret);

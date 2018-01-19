@@ -35,11 +35,11 @@ namespace CryptoSniper
         {
             ServiceStopped = false;
 
-         //   PriceFetcherThread = new Thread(GetPrices) { IsBackground = true };
-         //   PriceFetcherThread.Start();
+            PriceFetcherThread = new Thread(GetPrices) { IsBackground = true };
+            PriceFetcherThread.Start();
 
-            StartThread = new Thread(StartService) { IsBackground = true };
-            StartThread.Start();
+            //StartThread = new Thread(StartService) { IsBackground = true };
+            //StartThread.Start();
 
             return true;
         }
@@ -91,10 +91,9 @@ namespace CryptoSniper
             
             foreach (var user in users)
             {
-                if (user.CexioUserId != null || user.CexioKey != null || user.CexioSecret != null)
+                if (user.CexIoCredentials.UserId != null || user.CexIoCredentials.Key != null || user.CexIoCredentials.Secret != null)
                 {
                     validatedUsers.Add(user);
-                    //users.Remove(user);
                 }
             }
 
@@ -128,11 +127,11 @@ namespace CryptoSniper
 
                     if (result == true)
                     {
-                        var USDbalanceAmt = Convert.ToDecimal(ApiService.GetAccountBalance().USD.Available);
+                        var USDbalanceAmt = Convert.ToDecimal(ApiService.GetAccountBalance(user.CexIoCredentials).USD.Available);
                         var amountToBuy =  USDbalanceAmt * user.InvestmentPercentage;
 
                         //place the buy order
-                         var response = ApiService.PlaceInstantOrder("BTC", baseCurrency, "buy", amountToBuy.ToString());
+                         var response = ApiService.PlaceInstantOrder(user.CexIoCredentials, "BTC", baseCurrency, "buy", amountToBuy.ToString());
 
                         //We need to start here when we come back
                         //DatabaseServiceHandler.CreateOrder(DateTime.UtcNow, user.UserId, response.Symbol1Amount);
@@ -178,11 +177,13 @@ namespace CryptoSniper
                 var btgUsd = ApiService.GetLastPrice("BTG", "USD");
                 var xrpUsd = ApiService.GetLastPrice("XRP", "USD");
                 var bchUsd = ApiService.GetLastPrice("BCH", "USD");
+                var dashUsd = ApiService.GetLastPrice("DASH", "USD");
+                var zecUsd = ApiService.GetLastPrice("ZEC", "USD");
 
                 // Store them in database.
-                DatabaseServiceHandler.CreateLastPriceRecords(btcUsd, ethUsd, btgUsd, xrpUsd, bchUsd);
+                DatabaseServiceHandler.CreateLastPriceRecords(btcUsd, ethUsd, btgUsd, xrpUsd, bchUsd, dashUsd, zecUsd);
 
-                Thread.Sleep(1000 * 60); // Once a minute.
+                Thread.Sleep(1000 * 58); // Once a minute.
             }
         }
 
@@ -223,7 +224,6 @@ namespace CryptoSniper
 
             var percentageChange = c + ((decimal).10 * b);
 
-            if ()
         }
 
         /// <summary>

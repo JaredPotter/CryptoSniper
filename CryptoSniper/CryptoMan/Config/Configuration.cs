@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Newtonsoft.Json;
+using System;
 
 namespace CryptoSniper.Config
 {
@@ -18,11 +19,6 @@ namespace CryptoSniper.Config
         /// </summary>
         public static ConfigData ConfigData => _instance ?? (_instance = LoadConfigFile());
 
-        /// <summary>
-        ///     The configuration file path.
-        /// </summary>
-        public static string ConfigurationFilePath { get; set; }
-
         #region Methods
 
         /// <summary>
@@ -31,8 +27,27 @@ namespace CryptoSniper.Config
         /// <param name="path"></param>
         public static void SetConfigPathToProgramData(string path)
         {
-            Properties.Settings.Default["configPath"] = path;
-            Properties.Settings.Default.Save();
+            if (path == "" || !File.Exists(path))
+            {
+                throw new Exception($"Configuration file not specified or does not exist. path: {path}");
+            }
+
+            var configString = File.ReadAllText(path);
+            var basePath = @"C:\Program Files\CryptoSniper";
+
+            if (!Directory.Exists(basePath))
+            {
+                Directory.CreateDirectory(basePath);
+            }
+
+            var filePath = basePath + "\\config.json";
+
+            if (!File.Exists(filePath))
+            {
+                File.Create(filePath);
+            }
+
+            File.WriteAllText(filePath, configString);
         }
 
         /// <summary>
@@ -41,10 +56,8 @@ namespace CryptoSniper.Config
         /// <returns>The hydrated configuration singleton.</returns>
         private static ConfigData LoadConfigFile()
         {
+            var filePath = @"C:\Program Files\CryptoSniper\config.json";
             ConfigData configData;
-            var filePath = "";
-
-            filePath = Properties.Settings.Default["configPath"].ToString();
 
             using (StreamReader r = new StreamReader(filePath))
             {

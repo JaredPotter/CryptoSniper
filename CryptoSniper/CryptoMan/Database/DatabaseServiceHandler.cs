@@ -39,9 +39,15 @@ namespace CryptoSniper.Database
 
                 user.UserId = Convert.ToInt32(result["user_id"]);
                 user.Username = (string)result["username"];
-                user.CexioUserId = (string)result["cexio_user_id"];
-                user.CexioKey = (string)result["cexio_key"];
-                user.CexioSecret = (string)result["cexio_secret"];
+                var cexioUserId = (string)result["cexio_user_id"];
+                var cexioKey = (string)result["cexio_key"];
+                var cexioSecret = (string)result["cexio_secret"];
+                user.CexIoCredentials = new Config.Models.CexIoApiInfo
+                {
+                    UserId = cexioUserId,
+                    Key = cexioKey,
+                    Secret = cexioKey
+                };
                 user.PriceDerivativeTime = Convert.ToInt32(result["price_derivative_time"]);
                 user.InvestmentPercentage = Convert.ToInt32(result["investment_percentage"]);
                 user.NextInvestmentCheck = (DateTime?)result["next_investment_check"];
@@ -103,19 +109,30 @@ namespace CryptoSniper.Database
             ExecuteInsertUpdateQuery(query);
         }
 
-        public static void CreateLastPriceRecords(LastPriceResult btcUsd, LastPriceResult ethUsd, LastPriceResult btgUsd, LastPriceResult xrpUsd, LastPriceResult bchUsd)
+        public static void CreateLastPriceRecords(
+            LastPriceResult btcUsd, 
+            LastPriceResult ethUsd, 
+            LastPriceResult btgUsd, 
+            LastPriceResult xrpUsd, 
+            LastPriceResult bchUsd,
+            LastPriceResult dashUsd,
+            LastPriceResult zecUsd)
         {
             var query1 = $"INSERT INTO HistoricalPriceBtcUsd (price, date) VALUES ({Convert.ToDecimal(btcUsd.lprice)}, NOW());";
             var query2 = $"INSERT INTO HistoricalPriceEthUsd (price, date) VALUES ({Convert.ToDecimal(ethUsd.lprice)}, NOW());";
             var query3 = $"INSERT INTO HistoricalPriceBtgUsd (price, date) VALUES ({Convert.ToDecimal(btgUsd.lprice)}, NOW());";
             var query4 = $"INSERT INTO HistoricalPriceXrpUsd (price, date) VALUES ({Convert.ToDecimal(xrpUsd.lprice)}, NOW());";
             var query5 = $"INSERT INTO HistoricalPriceBchUsd (price, date) VALUES ({Convert.ToDecimal(bchUsd.lprice)}, NOW());";
+            var query6 = $"INSERT INTO HistoricalPriceDashUsd (price, date) VALUES ({Convert.ToDecimal(dashUsd.lprice)}, NOW());";
+            var query7 = $"INSERT INTO HistoricalPriceZecUsd (price, date) VALUES ({Convert.ToDecimal(zecUsd.lprice)}, NOW());";
 
             ExecuteInsertUpdateQuery(query1);
             ExecuteInsertUpdateQuery(query2);
             ExecuteInsertUpdateQuery(query3);
             ExecuteInsertUpdateQuery(query4);
             ExecuteInsertUpdateQuery(query5);
+            ExecuteInsertUpdateQuery(query6);
+            ExecuteInsertUpdateQuery(query7);
         }
 
         public static decimal GetLastPrice(string currency, int priceDerivativeTime = 0)

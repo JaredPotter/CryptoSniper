@@ -10,11 +10,6 @@ namespace CryptoSniper.Config
         #region Properties
 
         /// <summary>
-        ///     Configuration for Cex.io API.
-        /// </summary>
-        public CexIoApiInfo CexIoApiInfo { get; set; }
-
-        /// <summary>
         ///     Configuration for connecting to the database.
         /// </summary>
         public DatabaseConnectionInfo DatabaseConnectionInfo { get; set; }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CryptoSniper.Config.Models;
+using System;
 
 namespace CryptoSniper.Models
 {
@@ -10,11 +11,7 @@ namespace CryptoSniper.Models
 
         public string Username { get; set; }
 
-        public string CexioUserId { get; set; }
-
-        public string CexioKey { get; set; }
-
-        public string CexioSecret { get; set; }
+        public CexIoApiInfo CexIoCredentials { get; set; }
 
         public int PriceDerivativeTime { get; set; }
 
