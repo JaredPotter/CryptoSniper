@@ -35,11 +35,11 @@ namespace CryptoSniper
         {
             ServiceStopped = false;
 
-            PriceFetcherThread = new Thread(GetPrices) { IsBackground = true };
-            PriceFetcherThread.Start();
+            //PriceFetcherThread = new Thread(GetPrices) { IsBackground = true };
+            //PriceFetcherThread.Start();
 
-            //StartThread = new Thread(StartService) { IsBackground = true };
-            //StartThread.Start();
+            StartThread = new Thread(StartService) { IsBackground = true };
+            StartThread.Start();
 
             return true;
         }
@@ -105,12 +105,15 @@ namespace CryptoSniper
                 
 
                 //if the current date has passed the date the user wants to place the order
-                if (DateTime.Compare(investmentDate.Value, now) >= 0)
+                if (DateTime.Compare(investmentDate.Value, now) <= 0)
                 {
                     // Increment next investment check;
                     now = DateTime.Now;
                     var nextInvestmentDateTime = now.AddMinutes(user.PriceDerivativeTime);
                     DatabaseServiceHandler.UpdateNextInvestmentCheck(user.UserId, nextInvestmentDateTime);
+
+                    // Get user's investment plans.
+                    var investmentPlans = DatabaseServiceHandler.GetUserInvestmentPlans(user.UserId);
 
                     var baseCurrency = "USD"; // TODO: make this a user database parameter.
 
@@ -136,24 +139,11 @@ namespace CryptoSniper
                         //We need to start here when we come back
                         //DatabaseServiceHandler.CreateOrder(DateTime.UtcNow, user.UserId, response.Symbol1Amount);
                     }
-
-
                 }
-
-
             }
-
-
-
 
             // Check result...
             // If good, create InstantOrder on database.
-
-
-
-
-
-           
 
             // Execute investment.
          //   var response = ApiService.PlaceInstantOrder("BTC", baseCurrency, "buy", "0.0002");
@@ -183,7 +173,7 @@ namespace CryptoSniper
                 // Store them in database.
                 DatabaseServiceHandler.CreateLastPriceRecords(btcUsd, ethUsd, btgUsd, xrpUsd, bchUsd, dashUsd, zecUsd);
 
-                Thread.Sleep(1000 * 58); // Once a minute.
+                Thread.Sleep(1000 * 57); // Once a minute.
             }
         }
 

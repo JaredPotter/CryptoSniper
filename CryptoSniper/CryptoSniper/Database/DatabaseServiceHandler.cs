@@ -184,6 +184,31 @@ namespace CryptoSniper.Database
             return lastPrice;
         }
 
+        public static List<UserInvestmentPlan> GetUserInvestmentPlans(int userId)
+        {
+            var query = $"SELECT * FROM UserInvestmentPlan WHERE user_id = {userId};";
+
+            var results = ExecuteGetQuery(query);
+
+            var userInvestmentPlans = new List<UserInvestmentPlan>();
+
+            foreach (var result in results)
+            {
+                var userInvestmentPlan = new UserInvestmentPlan();
+
+                userInvestmentPlan.Id = Convert.ToInt32(result["order_id"]);
+                userInvestmentPlan.Currency = (string)result["currency"];
+                userInvestmentPlan.UserId = Convert.ToInt32(result["user_id"]);
+                userInvestmentPlan.Percent = Convert.ToDecimal(result["percent"]);
+                userInvestmentPlan.FallPercent = Convert.ToDecimal(result["fall_percent"]);
+                userInvestmentPlan.StabalizePercent = Convert.ToDecimal(result["stabalize_percent"]);
+
+                userInvestmentPlans.Add(userInvestmentPlan);
+            }
+
+            return userInvestmentPlans;
+        }
+
         /// <summary>
         ///     Executes the query.
         /// </summary>
