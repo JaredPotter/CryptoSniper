@@ -120,7 +120,8 @@ namespace CryptoSniper.Database
 
         public static decimal GetLastPrice(string currency, int priceDerivativeTime = 0)
         {
-            var now = DateTime.UtcNow.AddMinutes(priceDerivativeTime);
+           // var tempquery = $"SELECT * FROM HistoricalPriceBtcUsd ORDER BY id DESC LIMIT 3;";
+            var now = DateTime.UtcNow.AddMinutes(-priceDerivativeTime);
             var nowString = now.ToString("yyyy-MM-dd HH:mm") + ":%%";
             var query = "";
 

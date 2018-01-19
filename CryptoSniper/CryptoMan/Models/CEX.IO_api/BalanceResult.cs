@@ -18,7 +18,9 @@ namespace CryptoSniper.Models
 
         public ETH ETH { get; set; }
 
-        public XRP USD { get; set; }
+        public USD USD { get; set; }
+
+        public XRP XRP { get; set; }
 
         public BTG BTG { get; set; }
 

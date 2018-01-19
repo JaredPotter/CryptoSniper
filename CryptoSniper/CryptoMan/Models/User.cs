@@ -18,7 +18,7 @@ namespace CryptoSniper.Models
 
         public int PriceDerivativeTime { get; set; }
 
-        public int InvestmentPercentage { get; set; }
+        public decimal InvestmentPercentage { get; set; }
 
         public DateTime? NextInvestmentCheck { get; set; }
 
