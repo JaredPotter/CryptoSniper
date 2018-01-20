@@ -1,5 +1,4 @@
-﻿
-using CryptoSniper.Database;
+﻿using CryptoSniper.Database;
 using CryptoSniper.Models;
 using System;
 using System.Collections.Generic;
@@ -16,6 +15,9 @@ namespace CryptoSniper
         /// </summary>
         private static Thread StartThread { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private static Thread PriceFetcherThread { get; set; }
 
         /// <summary>
@@ -49,46 +51,11 @@ namespace CryptoSniper
         /// </summary>
         private static void StartService()
         {
-
-
-            //DatabaseServiceHandler.GetAllUsers();
-
-            //DatabaseServiceHandler.CreateOrder(DateTime.Now, 1, 10, 1, "BTC");
-
-            // DatabaseServiceHandler.CompleteOrder(1, DateTime.Now, 200000, (decimal) 0.75);   //tested, works
-            //DatabaseServiceHandler.GetAllInstantOrders(1);                                           //tested, works
-
-            //DatabaseServiceHandler.GetLastPrice("BTC");
-
-            //DatabaseServiceHandler.GetAllUsers();
-
-            // Get Last Price 
-            //var curr1 = "BTC";
-            //var curr2 = "USD";
-            //ApiService.GetLastPrice(curr1, curr2);
-
-            // Get Open Orders
-            //ApiService.GetOpenOrders();
-
-            // Get Account Balance
-            //ApiService.GetAccountBalance();
-
-            // Get Active Order Status
-            //ApiService.GetActiveOrderStatus();
-
-            //while (true)
-            //{
-            //    if (ServiceStopped)
-            //    {
-            //        return;
-            //    }
-
             // Get all users.
             var users = DatabaseServiceHandler.GetAllUsers();
             var validatedUsers = new List<User>();
 
             // Validate active CEX.IO account. Remove invalid ones.
-            
             foreach (var user in users)
             {
                 if (user.CexIoCredentials.UserId != null || user.CexIoCredentials.Key != null || user.CexIoCredentials.Secret != null)
@@ -97,20 +64,20 @@ namespace CryptoSniper
                 }
             }
 
-            // If investment date past, calculate investment.
+            // Iterate over all valid users.
             foreach (var user in validatedUsers)
             {
                 var investmentDate = user.NextInvestmentCheck;
                 var now = DateTime.Now;
-                
 
+                // If investment date past, calculate investment.
                 //if the current date has passed the date the user wants to place the order
                 if (DateTime.Compare(investmentDate.Value, now) <= 0)
                 {
                     // Increment next investment check;
                     now = DateTime.Now;
                     var nextInvestmentDateTime = now.AddMinutes(user.PriceDerivativeTime);
-                    DatabaseServiceHandler.UpdateNextInvestmentCheck(user.UserId, nextInvestmentDateTime);
+                    //DatabaseServiceHandler.UpdateNextInvestmentCheck(user.UserId, nextInvestmentDateTime);
 
                     // Get user's investment plans.
                     var investmentPlans = DatabaseServiceHandler.GetUserInvestmentPlans(user.UserId);
@@ -130,11 +97,14 @@ namespace CryptoSniper
 
                     if (result == true)
                     {
-                        var USDbalanceAmt = Convert.ToDecimal(ApiService.GetAccountBalance(user.CexIoCredentials).USD.Available);
-                        var amountToBuy =  USDbalanceAmt * user.InvestmentPercentage;
+                        var usdBalanceAmount = Convert.ToDecimal(ApiService.GetAccountBalance(user.CexIoCredentials).USD.Available);
+                        var amountToBuy = usdBalanceAmount * user.InvestmentPercentage;
 
-                        //place the buy order
-                         var response = ApiService.PlaceInstantOrder(user.CexIoCredentials, "BTC", baseCurrency, "buy", amountToBuy.ToString());
+                        // Place the buy order.
+                        var response = ApiService.PlaceInstantOrder(user.CexIoCredentials, "BTC", baseCurrency, "buy", amountToBuy.ToString());
+                        // TODO: verify payment went through.
+
+                        ApiService.GetOrderDetails(user.CexIoCredentials, user.UserId);
 
                         //We need to start here when we come back
                         //DatabaseServiceHandler.CreateOrder(DateTime.UtcNow, user.UserId, response.Symbol1Amount);

@@ -160,12 +160,11 @@ namespace CryptoSniper
             return placeInstantOrderResult;
         }
 
-        // TODO: Not tested
-        public static OrderDetailsResult GetOrderDetails(CexIoApiInfo credential, string id)
+        public static OrderDetailsResult GetOrderDetails(CexIoApiInfo credential, int order_id)
         {
             var endpoint = "https://cex.io/api/get_order/";
             var formParameters = new Dictionary<string, string>() {
-                { "id", id }
+                { "id", order_id.ToString() }
             };
 
             var jsonResponse = ExecutePostRequest(credential, endpoint, formParameters);

@@ -196,7 +196,7 @@ namespace CryptoSniper.Database
             {
                 var userInvestmentPlan = new UserInvestmentPlan();
 
-                userInvestmentPlan.Id = Convert.ToInt32(result["order_id"]);
+                userInvestmentPlan.Id = Convert.ToInt32(result["id"]);
                 userInvestmentPlan.Currency = (string)result["currency"];
                 userInvestmentPlan.UserId = Convert.ToInt32(result["user_id"]);
                 userInvestmentPlan.Percent = Convert.ToDecimal(result["percent"]);
