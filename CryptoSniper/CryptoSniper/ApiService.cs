@@ -266,6 +266,20 @@ namespace CryptoSniper
             }
                
             var response = request.GetResponse();
+            var statusCode = ((HttpWebResponse)response).StatusCode;
+            
+            if (statusCode != HttpStatusCode.OK)
+            {
+                var errorResponseStream = response.GetResponseStream();
+                var errorResult = "";
+                using (var reader = new StreamReader(errorResponseStream))
+                {
+                    errorResult = reader.ReadToEnd();
+                }
+
+                throw new Exception("POST request failed. " + errorResult);
+            }
+
             var responseStream = response.GetResponseStream();
 
             var result = "";

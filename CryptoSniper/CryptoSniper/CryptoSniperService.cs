@@ -82,32 +82,66 @@ namespace CryptoSniper
                     // Get user's investment plans.
                     var investmentPlans = DatabaseServiceHandler.GetUserInvestmentPlans(user.UserId);
 
-                    var baseCurrency = "USD"; // TODO: make this a user database parameter.
-
-                    //Create Point A - now 
-                    var pointA = DatabaseServiceHandler.GetLastPrice("BTC");
-
-                    // Point B - now - price_derivative_time (15 mins)
-                    var pointB = DatabaseServiceHandler.GetLastPrice("BTC", 15);
-
-                    //Point C - now - price_derivative_time (30 mins)
-                    var pointC = DatabaseServiceHandler.GetLastPrice("BTC", 30);
-
-                    var result = CalculateBuyOption(pointA, pointB, pointC);
-
-                    if (result == true)
+                    foreach (var investmentPlan in investmentPlans)
                     {
-                        var usdBalanceAmount = Convert.ToDecimal(ApiService.GetAccountBalance(user.CexIoCredentials).USD.Available);
-                        var amountToBuy = usdBalanceAmount * user.InvestmentPercentage;
+                        var symbol1 = investmentPlan.Currency;
+                        var baseCurrency = "USD"; // TODO: make this a user database parameter.
+                        var symbol2 = baseCurrency;
 
-                        // Place the buy order.
-                        var response = ApiService.PlaceInstantOrder(user.CexIoCredentials, "BTC", baseCurrency, "buy", amountToBuy.ToString());
-                        // TODO: verify payment went through.
+                        // Check if any incomplete instant orders exist. 
+                        // If yes, try to sell.
+                        // If no, then try to buy.
+                        //implementing sell orders here
 
-                        ApiService.GetOrderDetails(user.CexIoCredentials, user.UserId);
+                        var openInstantIncompleteOrders = DatabaseServiceHandler.GetAllInstantOrders(user.UserId);
 
+
+                        //Create Point A - now 
+                        var pointA = DatabaseServiceHandler.GetLastPrice(symbol1);
+
+                        // Point B - now - price_derivative_time (15 mins)
+                        var pointB = DatabaseServiceHandler.GetLastPrice(symbol1, 15);
+
+                        //Point C - now - price_derivative_time (30 mins)
+                        var pointC = DatabaseServiceHandler.GetLastPrice(symbol1, 30);
+
+                        var result = CalculateBuyOption(pointA, pointB, pointC);
+
+                        if (result == true)
+                        {
+                            var usdBalanceAmount = Convert.ToDecimal(ApiService.GetAccountBalance(user.CexIoCredentials).USD.Available);
+                            var amountToBuy = usdBalanceAmount * user.InvestmentPercentage;
+                            
+                            // Place the buy order.
+                            var response = ApiService.PlaceInstantOrder(user.CexIoCredentials, symbol1, symbol2, "buy", amountToBuy.ToString());
+                            // TODO: verify payment went through.
+
+                            // TODO: add the rest of the cryptocurrency smallest demoninations.
+                            // ETH
+                            // BTG
+                            // XRP
+                            // BCH
+                            // DASH
+                            // ZEC
+                            // BCH 
+                            var smallestDemoninations = new Dictionary<string, double>
+                            {
+                                { "USD", 0.00 },
+                                { "BTC",  0.00000001 }
+                            };
+
+                            var symbol1SmallestDemonination = smallestDemoninations[symbol1];
+                            var symbol2SmallestDemonination = smallestDemoninations[symbol2];
+                            var symbol1amount = Convert.ToInt32(response.Symbol1Amount);
+                            var symbol2amount = Convert.ToInt32(response.Symbol2Amount);
+
+                            var buyPrice = (symbol2amount * symbol2SmallestDemonination) / (symbol1amount * symbol1SmallestDemonination);
+                            buyPrice = Math.Round(buyPrice, 2);
+
+                            DatabaseServiceHandler.CreateInstantOrder(DateTime.UtcNow, user.UserId, buyPrice, Math.Round(symbol1amount * symbol1SmallestDemonination, 8), symbol1);
                         //We need to start here when we come back
                         //DatabaseServiceHandler.CreateOrder(DateTime.UtcNow, user.UserId, response.Symbol1Amount);
+                        }
                     }
                 }
             }

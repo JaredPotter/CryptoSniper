@@ -66,8 +66,11 @@ namespace CryptoSniper.Database
             ExecuteInsertUpdateQuery(query);
         }
 
+
         public static List<InstantOrder> GetAllInstantOrders(int userId)
         {
+            //TODO: Implement Getting all incomplete orders
+
             var query = $"SELECT * FROM crypto_sniper.`InstantOrder` WHERE user_id = '{userId}';";
 
             var results = ExecuteGetQuery(query);
@@ -102,7 +105,7 @@ namespace CryptoSniper.Database
             ExecuteInsertUpdateQuery(query);
         }
 
-        public static void CreateOrder(DateTime buyDate, int userId, int buyPrice, int amount, string cryptoCurrency)
+        public static void CreateInstantOrder(DateTime buyDate, int userId, double buyPrice, double amount, string cryptoCurrency)
         {
             var query = $"INSERT INTO crypto_sniper.`InstantOrder` (buy_date, user_id, buy_price, amount, crypto_currency) " +
                                                   $"VALUES ('{buyDate.ToString("yyyy-MM-dd H:mm:ss")}', {userId}, {buyPrice}, {amount}, '{cryptoCurrency}');";
